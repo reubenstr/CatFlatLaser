@@ -101,6 +101,19 @@ bool Sprite::Tick()
         }
     }
 
+    // Reverse direction randomly determined for chaotic effect.
+    if (PositionsToGo == 0)
+    {
+        PositionsToGo = random (15, 30);
+        
+        // Bias to remain in the same direction.
+        if (random(0, 2) == 0)
+        {
+            curDirection = GetReverseDirection(curDirection);
+        }        
+    }
+
+
     IncrementPosition(curDirection);
 
     PositionsToGo--;

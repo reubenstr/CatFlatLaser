@@ -114,6 +114,81 @@ void UpdatePixel(int x, int y, uint32_t color)
   }
 }
 
+void ProcessButtons()
+{
+
+  const int holdButtonDelay = 1000;
+
+  buttonMode.read();
+  buttonColor.read();
+  buttonSpeed.read();
+
+  if (buttonMode.wasPressed())
+  {
+    mode++;
+    if (mode == numModes)
+    {
+      mode = 0;
+    }
+    EEPROM.write(0, mode);
+  }
+
+  if (buttonColor.wasPressed())
+  {
+    color++;
+    if (color == numColors)
+    {
+      color = 0;
+    }
+    for (int i = 0; i < maxSprites; i++)
+    {
+      sprites[i].SetColorMode(color);
+    }
+    EEPROM.write(1, color);
+  }
+
+  if (buttonSpeed.wasPressed())
+  {
+    speed++;
+    if (speed == numSpeeds)
+    {
+      speed = 0;
+    }
+    for (int i = 0; i < maxSprites; i++)
+    {
+      sprites[i].SetSpeedMode(speed);
+    }
+    EEPROM.write(2, speed);
+  }
+
+  // Check if button(s) are held.
+  if (buttonMode.pressedFor(holdButtonDelay))
+  {
+    mode = 0;
+    EEPROM.write(0, mode);
+  }
+
+  if (buttonColor.pressedFor(holdButtonDelay))
+  {
+    color = 0;
+    EEPROM.write(1, color);
+    for (int i = 0; i < maxSprites; i++)
+    {
+      sprites[i].SetColorMode(color);
+    }
+  }
+
+  if (buttonSpeed.pressedFor(holdButtonDelay))
+  {
+    speed = 0;
+    EEPROM.write(2, speed);
+    for (int i = 0; i < maxSprites; i++)
+    {
+      sprites[i].SetSpeedMode(speed);
+    }
+  }
+}
+
 void LoadEEPROM()
 {
   mode = EEPROM.read(0);
@@ -187,22 +262,9 @@ void setup()
   for (int i = 0; i < maxSprites; i++)
   {
     sprites[i].SetGrid((byte *)grid, gridSize, gridSize);
+    sprites[i].SetColorMode(color);
+    sprites[i].SetSpeedMode(speed);
   }
-
-  for (int i = 0; i < maxSprites; i++)
-  {
-    sprites[i].SetColorMode(1);
-  }
-
-  // TEMP
-  /*
-  UpdatePixel(gridXCrossIndex , 0 , 1);
-  ShowLEDs();
-  while (1)
-  {
- }
- */
-  // TEMP
 
   LoadEEPROM();
 }
@@ -210,13 +272,22 @@ void setup()
 void loop()
 {
 
+  ProcessButtons();
+
   bool updateFlag = false;
   for (int i = 0; i < maxSprites; i++)
   {
+
     if (sprites[i].Tick())
     {
       UpdatePixel(sprites[i].GetPrevCol(), sprites[i].GetPrevRow(), 0); // Turn off previous pixel.
-      UpdatePixel(sprites[i].GetCurCol(), sprites[i].GetCurRow(), sprites[i].GetColor());
+
+      // Only display X amount of sprites depending on mode value.
+      if (i < (mode + 1))
+      {
+        UpdatePixel(sprites[i].GetCurCol(), sprites[i].GetCurRow(), sprites[i].GetColor());
+      }
+
       updateFlag = true;
     }
 
@@ -224,47 +295,5 @@ void loop()
     {
       ShowLEDs();
     }
-  }
-
-  buttonMode.read();
-  buttonColor.read();
-  buttonSpeed.read();
-
-  if (buttonMode.wasPressed())
-  {
-    mode++;
-    if (mode == numModes)
-    {
-      mode = 0;
-    }
-    EEPROM.write(0, mode);
-  }
-
-  if (buttonColor.wasPressed())
-  {
-    color++;
-    if (color == numColors)
-    {
-      color = 0;
-    }
-    for (int i = 0; i < maxSprites; i++)
-    {
-      sprites[i].SetColorMode(color);
-    }
-     EEPROM.write(1, color);
-  }
-
-  if (buttonSpeed.wasPressed())
-  {
-    speed++;
-    if (speed == numSpeeds)
-    {
-      speed = 0;
-    }
-    for (int i = 0; i < maxSprites; i++)
-    {
-      sprites[i].SetSpeedMode(speed);      
-    }
-     EEPROM.write(2, speed);
   }
 }
