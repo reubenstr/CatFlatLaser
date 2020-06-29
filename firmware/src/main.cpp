@@ -116,7 +116,6 @@ void UpdatePixel(int x, int y, uint32_t color)
 
 void ProcessButtons()
 {
-
   const int holdButtonDelay = 1000;
 
   buttonMode.read();
@@ -259,6 +258,7 @@ void setup()
     grid[gridXCrossIndex][i] = 1;
   }
 
+  // Init sprites.
   for (int i = 0; i < maxSprites; i++)
   {
     sprites[i].SetGrid((byte *)grid, gridSize, gridSize);
