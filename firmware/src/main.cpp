@@ -1,10 +1,18 @@
 /*
+	Cat Flat Laser
+	Reuben Strangelove
+	Spring 2020
+	
+	A flat LED cat toy to simulate a laser pointer.
+	
+	MCU:
+		Arduino Nano (AtMega328p)
+		
+	
+	Notes: 
+		
 
-Cat Flat Laser
-A flat LED cat toy to simulate a laser pointer.
 
-Reuben Strangelove
-Spring 2020
 
 */
 
