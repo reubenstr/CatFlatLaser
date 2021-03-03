@@ -8,12 +8,6 @@
 	MCU:
 		Arduino Nano (AtMega328p)
 		
-	
-	Notes: 
-		
-
-
-
 */
 
 #include <Arduino.h>
